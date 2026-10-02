@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="640" viewBox="0 0 1100 640" font-family="-apple-system, 'Apple SD Gothic Neo', Helvetica, Arial, sans-serif">
+  <defs>
+    <style>
+      .title { font-size: 22px; font-weight: 700; fill: #1d1d1f; }
+      .actor { font-size: 14px; font-weight: 700; fill: #1d1d1f; text-anchor: middle; }
+      .life { stroke: #c7c7cc; stroke-width: 1.5; stroke-dasharray: 5 5; }
+      .msg { stroke: #1d1d1f; stroke-width: 1.4; fill: none; marker-end: url(#head); }
+      .ret { stroke: #8e8e93; stroke-width: 1.4; fill: none; stroke-dasharray: 6 4; marker-end: url(#headGray); }
+      .text { font-size: 12px; fill: #1d1d1f; }
+      .note { font-size: 11.5px; fill: #515154; }
+      .box { rx: 8; ry: 8; }
+    </style>
+    <marker id="head" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1d1d1f"/></marker>
+    <marker id="headGray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8e8e93"/></marker>
+  </defs>
+  <rect width="1100" height="640" fill="#fbfbfd"/>
+  <text x="40" y="44" class="title">MCP 도구 호출 시퀀스 — 지식 부족 → 외부 도구 → 학습</text>
+
+  <!-- actors -->
+  <g>
+    <rect x="60" y="70" width="150" height="40" class="box" fill="#e8f0fe" stroke="#a8c3f7"/><text x="135" y="95" class="actor">LanternAgent(그래프)</text>
+    <rect x="280" y="70" width="150" height="40" class="box" fill="#f3e8ff" stroke="#c9a7f5"/><text x="355" y="95" class="actor">LanguageModelSession</text>
+    <rect x="500" y="70" width="150" height="40" class="box" fill="#fde8e8" stroke="#f0a3a3"/><text x="575" y="95" class="actor">MCPBridgedTool</text>
+    <rect x="720" y="70" width="150" height="40" class="box" fill="#fff4e0" stroke="#f3c77a"/><text x="795" y="95" class="actor">MCPClient</text>
+    <rect x="920" y="70" width="150" height="40" class="box" fill="#f2f2f7" stroke="#c7c7cc"/><text x="995" y="95" class="actor">MCP 서버</text>
+  </g>
+  <line x1="135" y1="110" x2="135" y2="600" class="life"/>
+  <line x1="355" y1="110" x2="355" y2="600" class="life"/>
+  <line x1="575" y1="110" x2="575" y2="600" class="life"/>
+  <line x1="795" y1="110" x2="795" y2="600" class="life"/>
+  <line x1="995" y1="110" x2="995" y2="600" class="life"/>
+
+  <!-- connect phase -->
+  <text x="40" y="140" class="note">[앱 시작/연결 시]</text>
+  <path d="M795 158 L995 158" class="msg"/><text x="810" y="152" class="text">initialize (protocolVersion 2025-06-18, clientInfo Lantern)</text>
+  <path d="M995 180 L795 180" class="ret"/><text x="810" y="196" class="note">serverInfo, capabilities · (HTTP: Mcp-Session-Id)</text>
+  <path d="M795 214 L995 214" class="msg"/><text x="810" y="208" class="text">notifications/initialized · tools/list</text>
+  <path d="M995 236 L795 236" class="ret"/><text x="810" y="252" class="note">tools[] (name, description, inputSchema)</text>
+  <path d="M795 270 L575 270" class="msg"/><text x="590" y="264" class="text">JSON Schema → DynamicGenerationSchema → GenerationSchema</text>
+
+  <!-- query phase -->
+  <text x="40" y="306" class="note">[질문 시 · 그래프 확장 노드가 knowledgeGap=true 판정, 심층 모드]</text>
+  <path d="M135 326 L355 326" class="msg"/><text x="150" y="320" class="text">respond("질문: …") — 세션에 브리지 도구 + search_knowledge 장착</text>
+  <path d="M355 358 L575 358" class="msg"/><text x="370" y="352" class="text">모델이 도구 선택 → call(arguments: GeneratedContent)</text>
+  <path d="M575 390 L795 390" class="msg"/><text x="590" y="384" class="text">callTool(name, arguments JSON)</text>
+  <path d="M795 420 L995 420" class="msg"/><text x="810" y="414" class="text">tools/call (JSON-RPC id=n)</text>
+  <path d="M995 446 L795 446" class="ret"/><text x="810" y="462" class="note">result.content[].text (isError 확인)</text>
+  <path d="M795 478 L575 478" class="ret"/><text x="590" y="494" class="note">문자열(최대 1,500자)</text>
+  <path d="M575 506 L355 506" class="ret"/><text x="370" y="522" class="note">Tool Output → 모델이 사실 요약(3~6문장)</text>
+  <path d="M355 540 L135 540" class="ret"/><text x="150" y="556" class="note">toolResults에 추가</text>
+
+  <rect x="60" y="572" width="1000" height="40" class="box" fill="#eaf7ee" stroke="#9ad3ac"/>
+  <text x="72" y="596" class="text">지식 학습 노드: 요약 → VectorStore.addDocument(source: .tool) → KnowledgeGraph.extractCheap → 다음 질문부터 로컬 근거로 사용 (도구 결과도 [n] 출처 번호를 받는다)</text>
+  <text x="60" y="630" class="note">검증(2026-10-02): 로컬 Python 스텁 서버로 stdio·HTTP 전송 확인, 온디바이스 모델이 add 도구를 호출해 1234+4321=5555 응답, 앱 그래프에서 지식 부족 → 외부 도구 경로 실행 확인.</text>
+</svg>

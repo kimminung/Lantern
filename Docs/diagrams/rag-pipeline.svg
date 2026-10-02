@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="560" viewBox="0 0 1100 560" font-family="-apple-system, 'Apple SD Gothic Neo', Helvetica, Arial, sans-serif">
+  <defs>
+    <style>
+      .title { font-size: 22px; font-weight: 700; fill: #1d1d1f; }
+      .section { font-size: 13px; font-weight: 700; fill: #6e6e73; letter-spacing: .5px; }
+      .node { rx: 10; ry: 10; stroke-width: 1.5; }
+      .label { font-size: 13.5px; font-weight: 600; fill: #1d1d1f; text-anchor: middle; }
+      .sub { font-size: 11px; fill: #515154; text-anchor: middle; }
+      .edge { stroke: #8e8e93; stroke-width: 1.6; fill: none; marker-end: url(#head); }
+      .note { font-size: 12px; fill: #515154; }
+      .formula { font-size: 13px; fill: #1d1d1f; font-family: 'SF Mono', Menlo, monospace; }
+    </style>
+    <marker id="head" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8e8e93"/></marker>
+  </defs>
+  <rect width="1100" height="560" fill="#fbfbfd"/>
+  <text x="40" y="44" class="title">RAG 파이프라인 — 색인(Ingest)과 검색(Retrieve)</text>
+
+  <text x="40" y="92" class="section">① 색인 (문서를 가져올 때)</text>
+  <g>
+    <rect x="40" y="104" width="150" height="62" class="node" fill="#e8f0fe" stroke="#a8c3f7"/>
+    <text x="115" y="130" class="label">문서</text><text x="115" y="148" class="sub">txt · md · pdf · 붙여넣기 · 도구 결과</text>
+    <rect x="240" y="104" width="150" height="62" class="node" fill="#e8f0fe" stroke="#a8c3f7"/>
+    <text x="315" y="130" class="label">Chunker</text><text x="315" y="148" class="sub">문단 기준 ~360자, 겹침 60</text>
+    <rect x="440" y="104" width="170" height="62" class="node" fill="#f3e8ff" stroke="#c9a7f5"/>
+    <text x="525" y="130" class="label">임베딩</text><text x="525" y="148" class="sub">NLContextualEmbedding(ko) 512차원</text>
+    <rect x="660" y="104" width="150" height="62" class="node" fill="#f3e8ff" stroke="#c9a7f5"/>
+    <text x="735" y="130" class="label">키워드</text><text x="735" y="148" class="sub">NLTokenizer + 조사·활용 제거</text>
+    <rect x="860" y="104" width="200" height="62" class="node" fill="#f2f2f7" stroke="#c7c7cc"/>
+    <text x="960" y="130" class="label">VectorStore (actor)</text><text x="960" y="148" class="sub">chunks.json · documents.json</text>
+  </g>
+  <path d="M190 135 L240 135" class="edge"/><path d="M390 135 L440 135" class="edge"/><path d="M610 135 L660 135" class="edge"/><path d="M810 135 L860 135" class="edge"/>
+  <path d="M525 166 L525 200 L960 200 L960 230" class="edge"/>
+  <rect x="860" y="230" width="200" height="54" class="node" fill="#fff4e0" stroke="#f3c77a"/>
+  <text x="960" y="253" class="label">KnowledgeGraph (actor)</text><text x="960" y="271" class="sub">NLTagger 동시 출현 / LLM 트리플</text>
+  <text x="560" y="194" class="note">폴백: 임베딩 자산이 없으면 해싱 n-gram 512차원</text>
+
+  <text x="40" y="330" class="section">② 검색 (질문할 때)</text>
+  <g>
+    <rect x="40" y="342" width="150" height="62" class="node" fill="#eaf7ee" stroke="#9ad3ac"/>
+    <text x="115" y="368" class="label">질문</text><text x="115" y="386" class="sub">심층 모드: 재작성 질의 +3</text>
+    <rect x="240" y="342" width="170" height="62" class="node" fill="#f3e8ff" stroke="#c9a7f5"/>
+    <text x="325" y="368" class="label">질의 임베딩</text><text x="325" y="386" class="sub">같은 엔진으로 벡터화</text>
+    <rect x="460" y="342" width="220" height="62" class="node" fill="#f3e8ff" stroke="#c9a7f5"/>
+    <text x="570" y="368" class="label">하이브리드 점수</text><text x="570" y="386" class="sub">모든 청크와 비교 · 상위 4~6개</text>
+    <rect x="730" y="342" width="150" height="62" class="node" fill="#fff4e0" stroke="#f3c77a"/>
+    <text x="805" y="368" class="label">그래프 사실</text><text x="805" y="386" class="sub">질문 속 개념의 1홉 이웃</text>
+    <rect x="930" y="342" width="130" height="62" class="node" fill="#eaf7ee" stroke="#9ad3ac"/>
+    <text x="995" y="368" class="label">근거 블록</text><text x="995" y="386" class="sub">[1]…[n] + 사실 + 도구</text>
+  </g>
+  <path d="M190 373 L240 373" class="edge"/><path d="M410 373 L460 373" class="edge"/><path d="M680 373 L730 373" class="edge"/><path d="M880 373 L930 373" class="edge"/>
+
+  <text x="40" y="450" class="formula">score = 0.65 × max(0, cosine(q, chunk)) + 0.35 × keywordOverlap(q, chunk)</text>
+  <text x="40" y="476" class="note">keywordOverlap: 질의 키워드가 청크 키워드에 있으면 1점, 본문에만 있으면 0.7점을 더해 질의 키워드 수로 나눈다 (0~1).</text>
+  <text x="40" y="500" class="note">지식 부족 판정: 최고 점수 &lt; 0.45 (무관 문서 ≈ 0.41, 관련 문서 0.57~0.71 측정) 또는 심층 모드에서 모델이 "근거 불충분"으로 판정.</text>
+  <text x="40" y="524" class="note">근거 블록은 하네스 정책의 글자 예산(기본 2,400자) 안에서 조립되며, 답변에 실제 인용된 번호의 출처만 사용자에게 보인다.</text>
+</svg>

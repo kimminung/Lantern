@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="620" viewBox="0 0 1100 620" font-family="-apple-system, 'Apple SD Gothic Neo', Helvetica, Arial, sans-serif">
+  <defs>
+    <style>
+      .title { font-size: 22px; font-weight: 700; fill: #1d1d1f; }
+      .layer { font-size: 13px; font-weight: 700; fill: #6e6e73; letter-spacing: .5px; }
+      .box { rx: 10; ry: 10; stroke-width: 1.5; }
+      .label { font-size: 14px; font-weight: 600; fill: #1d1d1f; }
+      .sub { font-size: 11.5px; fill: #515154; }
+      .arrow { stroke: #8e8e93; stroke-width: 1.5; fill: none; marker-end: url(#head); }
+    </style>
+    <marker id="head" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="#8e8e93"/>
+    </marker>
+  </defs>
+  <rect width="1100" height="620" fill="#fbfbfd"/>
+  <text x="40" y="44" class="title">Lantern(랜턴) 아키텍처 — 모든 계층이 기기 안에서 동작</text>
+
+  <!-- UI layer -->
+  <text x="40" y="86" class="layer">UI (SwiftUI)</text>
+  <g>
+    <rect x="40" y="96" width="190" height="64" class="box" fill="#e8f0fe" stroke="#a8c3f7"/>
+    <text x="56" y="122" class="label">ChatView</text><text x="56" y="142" class="sub">메시지 · 출처 · 추적 패널</text>
+    <rect x="250" y="96" width="190" height="64" class="box" fill="#e8f0fe" stroke="#a8c3f7"/>
+    <text x="266" y="122" class="label">KnowledgeView</text><text x="266" y="142" class="sub">문서 가져오기 · 청크 · 검색 테스트</text>
+    <rect x="460" y="96" width="190" height="64" class="box" fill="#e8f0fe" stroke="#a8c3f7"/>
+    <text x="476" y="122" class="label">GraphView</text><text x="476" y="142" class="sub">지식 그래프 · 에이전트 그래프</text>
+    <rect x="670" y="96" width="190" height="64" class="box" fill="#e8f0fe" stroke="#a8c3f7"/>
+    <text x="686" y="122" class="label">MCPView</text><text x="686" y="142" class="sub">서버 연결 · 도구 호출</text>
+    <rect x="880" y="96" width="180" height="64" class="box" fill="#e8f0fe" stroke="#a8c3f7"/>
+    <text x="896" y="122" class="label">SettingsView</text><text x="896" y="142" class="sub">모델 · 하네스 · STT</text>
+  </g>
+
+  <!-- AppModel -->
+  <rect x="40" y="186" width="1020" height="56" class="box" fill="#fff4e0" stroke="#f3c77a"/>
+  <text x="56" y="210" class="label">AppModel (@Observable, MainActor)</text>
+  <text x="56" y="230" class="sub">대화·지식·MCP·음성 상태를 한 곳에서 묶고, 저장소(JSON)와 동기화한다 — Combine 없이 async/await</text>
+
+  <!-- Agent layer -->
+  <text x="40" y="282" class="layer">AGENT (LangGraph 방식 StateGraph)</text>
+  <rect x="40" y="292" width="1020" height="92" class="box" fill="#eaf7ee" stroke="#9ad3ac"/>
+  <text x="56" y="316" class="label">LanternAgent — 노드: 입력 분석 → 이미지 이해 → 질의 재작성 → 하이브리드 검색 → 관련성 채점 → 그래프 확장 → [MCP 도구 → 지식 학습] → 초안 생성 → 하네스 검증 → 마무리</text>
+  <text x="56" y="340" class="sub">StateGraph&lt;AgentState&gt;: 노드(비동기 함수) + 고정/조건부 간선 + TraceEvent 보고 · 조건부 간선은 지식 부족(점수 문턱 + 모델 판정)일 때만 외부 도구로 분기</text>
+  <text x="56" y="364" class="sub">Harness: Instructions(페르소나+규칙) 고정 · 근거 블록 토큰 예산 · 출력 검사(출처 번호, 길이, 유령 인용) · 자동 수정 · 심층 모드 근거 검증(GroundingVerdict)</text>
+
+  <!-- Services -->
+  <text x="40" y="424" class="layer">SERVICES</text>
+  <g>
+    <rect x="40" y="434" width="160" height="78" class="box" fill="#f3e8ff" stroke="#c9a7f5"/>
+    <text x="52" y="458" class="label">LanguageModel</text><text x="52" y="476" class="sub">FoundationModels</text><text x="52" y="492" class="sub">SystemLanguageModel / PCC</text>
+    <rect x="212" y="434" width="160" height="78" class="box" fill="#f3e8ff" stroke="#c9a7f5"/>
+    <text x="224" y="458" class="label">VectorStore</text><text x="224" y="476" class="sub">NLContextualEmbedding</text><text x="224" y="492" class="sub">코사인 + 키워드 하이브리드</text>
+    <rect x="384" y="434" width="160" height="78" class="box" fill="#f3e8ff" stroke="#c9a7f5"/>
+    <text x="396" y="458" class="label">KnowledgeGraph</text><text x="396" y="476" class="sub">트리플(S-P-O) 저장</text><text x="396" y="492" class="sub">NLTagger / LLM 추출</text>
+    <rect x="556" y="434" width="160" height="78" class="box" fill="#f3e8ff" stroke="#c9a7f5"/>
+    <text x="568" y="458" class="label">MCPClient</text><text x="568" y="476" class="sub">JSON-RPC 2.0</text><text x="568" y="492" class="sub">stdio(macOS) · Streamable HTTP</text>
+    <rect x="728" y="434" width="160" height="78" class="box" fill="#f3e8ff" stroke="#c9a7f5"/>
+    <text x="740" y="458" class="label">Speech</text><text x="740" y="476" class="sub">SpeechAnalyzer/Transcriber</text><text x="740" y="492" class="sub">HF Whisper 슬롯(예정)</text>
+    <rect x="900" y="434" width="160" height="78" class="box" fill="#f3e8ff" stroke="#c9a7f5"/>
+    <text x="912" y="458" class="label">Vision</text><text x="912" y="476" class="sub">분류 · OCR 사전 분석</text><text x="912" y="492" class="sub">Attachment 멀티모달</text>
+  </g>
+
+  <!-- Storage -->
+  <text x="40" y="552" class="layer">STORAGE</text>
+  <rect x="40" y="562" width="1020" height="40" class="box" fill="#f2f2f7" stroke="#c7c7cc"/>
+  <text x="56" y="587" class="sub">~/Library/Application Support/Lantern/ — chunks.json · documents.json · graph-entities.json · graph-relations.json · conversations.json · harness-policy.json · mcp-servers.json · models/whisper/</text>
+
+  <!-- arrows -->
+  <path d="M550 160 L550 186" class="arrow"/>
+  <path d="M550 242 L550 292" class="arrow"/>
+  <path d="M550 384 L550 434" class="arrow"/>
+  <path d="M550 512 L550 562" class="arrow"/>
+</svg>
