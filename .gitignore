@@ -21,3 +21,11 @@ build/
 Models/
 *.mlmodelc
 *.mlpackage
+
+# 소개 영상: 마스터 · 프레임 · npm 패키지 · 모델 · 중간 산출물은 로컬에서 다시 만든다 (Docs/video/README.md)
+Docs/video/*.mkv
+Docs/video/gif_frames/
+Docs/video/stills/
+Docs/video/src/node_modules/
+Docs/video/src/audio/build/
+Docs/video/src/audio/models/

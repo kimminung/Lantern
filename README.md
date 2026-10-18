@@ -2,6 +2,10 @@
 
 > **Your knowledge, lit on-device.** — 내 기기 안에 들고 다니는 지식이 묻는 순간 켜지는 SwiftUI 에이전트
 
+<img src="Docs/video/lantern-intro.gif" width="100%" alt="Lantern 소개: 등불이 켜지고, 빠른 답변과 심층 검색, 상태 그래프, 하이브리드 검색, 지식 그래프, MCP 도구 학습, 하네스 검증이 차례로 보이는 하이라이트">
+
+<sub>▶ 내레이션과 음악이 있는 1분 53초 영상: <a href="Docs/video/lantern-intro.mp4"><b>Docs/video/lantern-intro.mp4</b></a> · <a href="Docs/video/README.md">만든 방법</a></sub>
+
 랜턴은 Apple Foundation Models(온디바이스 SLM) 위에 **RAG**, **지식 그래프**, **LangGraph 방식 상태 그래프**, **MCP 도구 연결**, **하네스(일관성 규칙)**, **이미지 첨부(멀티모달)**, **음성 입력(STT)** 을 얹은 개인 지식 비서입니다. 문서·대화·임베딩·그래프는 모두 `~/Library/Application Support/Lantern/`의 평문 JSON으로 남고, 기본 설정에서는 네트워크 요청이 한 번도 일어나지 않습니다.
 
 ![chat](Docs/screenshots/deep.png)
@@ -110,7 +114,8 @@ MyApp/
 Docs/
 ├── TechPRD.md · Tasks.md
 ├── diagrams/*.svg
-└── screenshots/*.png
+├── screenshots/*.png
+└── video/                      README 소개 영상(mp4 · gif)과 렌더러
 ```
 
 ## 설계 메모

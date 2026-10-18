@@ -1,0 +1,16 @@
+{
+  "name": "lantern-intro-video",
+  "private": true,
+  "description": "Renderer for the Lantern README intro video (HTML scenes -> Playwright frames -> ffmpeg)",
+  "scripts": {
+    "stills": "node render.js stills ../stills",
+    "video": "node render.js video ../master.mkv"
+  },
+  "dependencies": {
+    "@fontsource-variable/fraunces": "5.3.0",
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "gsap": "3.15.0",
+    "playwright": "1.56.0",
+    "pretendard": "1.3.9"
+  }
+}
